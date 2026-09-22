@@ -22,8 +22,11 @@ public abstract class BaseTest
 
     protected SellerDbContext InitSellerDbContext()
     {
-        // ensure schema is created
-        SellerDbContext context = (SellerDbContext) _cluster.Client.ServiceProvider.GetService(typeof(SellerDbContext));
+        // SellerDbContext is registered as a scoped service (by AddDbContextFactory), which can't
+        // be resolved directly from the client's root service provider. Go through the factory
+        // (registered as a singleton) instead, which creates a standalone, scope-independent instance.
+        var factory = (IDbContextFactory<SellerDbContext>) _cluster.Client.ServiceProvider.GetService(typeof(IDbContextFactory<SellerDbContext>));
+        SellerDbContext context = factory.CreateDbContext();
 
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         context.Database.Migrate();
@@ -100,7 +103,7 @@ public abstract class BaseTest
         {
             IStockActor stockActor;
             if (config.OrleansTransactions)
-                stockActor = _cluster.GrainFactory.GetGrain<ITransactionalStockActor>(1, itemId.ToString());
+                stockActor = new TransactionalStockActorProxy(_cluster.GrainFactory.GetGrain<ITransactionalStockActor>(1, itemId.ToString()));
             else
                 stockActor = _cluster.GrainFactory.GetGrain<IStockActor>(1, itemId.ToString(), "OrleansApp.Grains.StockActor");
 

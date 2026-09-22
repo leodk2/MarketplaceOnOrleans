@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using OrleansApp.Abstract;
 using OrleansApp.Grains;
 using OrleansApp.Infra;
+using OrleansApp.Interfaces;
 
 namespace OrleansApp.Transactional;
 
@@ -15,19 +16,19 @@ public sealed class TransactionalPaymentActor : AbstractPaymentActor, ITransacti
     {
     }
 
-    protected override ITransactionalOrderActor GetOrderActor(int id)
+    protected override IOrderActor GetOrderActor(int id)
     {
-        return GrainFactory.GetGrain<ITransactionalOrderActor>(id);
+        return new TransactionalOrderActorProxy(GrainFactory.GetGrain<ITransactionalOrderActor>(id));
     }
 
-    protected override ITransactionalShipmentActor GetShipmentActor(int id)
+    protected override IShipmentActor GetShipmentActor(int id)
     {
-        return GrainFactory.GetGrain<ITransactionalShipmentActor>(id);
+        return new TransactionalShipmentActorProxy(GrainFactory.GetGrain<ITransactionalShipmentActor>(id));
     }
 
-    protected override ITransactionalStockActor GetStockActor(int sellerId, string productId)
+    protected override IStockActor GetStockActor(int sellerId, string productId)
     {
-        return GrainFactory.GetGrain<ITransactionalStockActor>(sellerId, productId);
+        return new TransactionalStockActorProxy(GrainFactory.GetGrain<ITransactionalStockActor>(sellerId, productId));
     }
 }
 
