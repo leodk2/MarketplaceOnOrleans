@@ -32,9 +32,9 @@ public sealed class OrderController : ControllerBase
         return grains.GetGrain<IOrderActor>(customerId);
     }
 
-    private ITransactionalOrderActor GetTransactionalOrderActor(IGrainFactory grains, int customerId)
+    private IOrderActor GetTransactionalOrderActor(IGrainFactory grains, int customerId)
     {
-        return grains.GetGrain<ITransactionalOrderActor>(customerId);
+        return new TransactionalOrderActorProxy(grains.GetGrain<ITransactionalOrderActor>(customerId));
     }
 
 }
