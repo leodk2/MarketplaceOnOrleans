@@ -80,9 +80,9 @@ public sealed class ProductController : ControllerBase
         return grains.GetGrain<IProductActor>(sellerId, productId.ToString());
     }
 
-    private ITransactionalProductActor GetTransactionalProductActor(IGrainFactory grains, int sellerId, int productId)
+    private IProductActor GetTransactionalProductActor(IGrainFactory grains, int sellerId, int productId)
     {
-        return grains.GetGrain<ITransactionalProductActor>(sellerId, productId.ToString());
+        return new TransactionalProductActorProxy(grains.GetGrain<ITransactionalProductActor>(sellerId, productId.ToString()));
     }
 
 }

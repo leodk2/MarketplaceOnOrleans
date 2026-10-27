@@ -45,9 +45,9 @@ public sealed class StockController : ControllerBase
         return grains.GetGrain<IStockActor>(sellerId, productId.ToString());
     }
 
-    private ITransactionalStockActor GetTransactionalStockActor(IGrainFactory grains, int sellerId, int productId)
+    private IStockActor GetTransactionalStockActor(IGrainFactory grains, int sellerId, int productId)
     {
-        return grains.GetGrain<ITransactionalStockActor>(sellerId, productId.ToString());
+        return new TransactionalStockActorProxy(grains.GetGrain<ITransactionalStockActor>(sellerId, productId.ToString()));
     }
 
 }

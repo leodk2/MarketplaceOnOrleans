@@ -116,9 +116,9 @@ public class CartActor : Grain, ICartActor
         return this.GrainFactory.GetGrain<IOrderActor>(customerId);
     }
 
-    private ITransactionalOrderActor GetTransactionalOrderActor(int customerId)
+    private IOrderActor GetTransactionalOrderActor(int customerId)
     {
-        return this.GrainFactory.GetGrain<ITransactionalOrderActor>(customerId);
+        return new TransactionalOrderActorProxy(this.GrainFactory.GetGrain<ITransactionalOrderActor>(customerId));
     }
 
 }
